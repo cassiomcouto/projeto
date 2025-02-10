@@ -1,0 +1,22 @@
+replicaCount: 1
+
+image:
+  repository: "918282016206.dkr.ecr.us-east-1.amazonaws.com/app"
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 8000
+
+livenessProbe:
+  enabled: true
+  path: /health
+  initialDelaySeconds: 5
+  periodSeconds: 10
+
+readinessProbe:
+  enabled: true
+  path: /health
+  initialDelaySeconds: 5
+  periodSeconds: 10
