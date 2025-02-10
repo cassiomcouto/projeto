@@ -26,13 +26,13 @@ Esta documentação descreve o processo passo a passo para **construir a imagem 
 2. Execute o comando abaixo para construir a imagem Docker:
 
    ```bash
-   docker build -t <nome-da-imagem>:<tag> .
+   docker build -t <nome-do-repositorio>/<nome-da-imagem>:<tag> .
    ```
 
    **Exemplo**:
 
    ```bash
-   docker build -t app:latest .
+   docker build -t mydockerrepo/app:latest .
    ```
 
    Isso criará uma imagem Docker chamada `app` com a tag `latest`.
@@ -61,21 +61,7 @@ docker login
 
 Esse comando solicitará seu nome de usuário e senha.
 
-### 2.2. Criar a Tag da Imagem
-
-Antes de enviar a imagem, crie a tag associada ao repositório:
-
-```bash
-docker tag <nome-da-imagem>:<tag> <nome-do-repositorio>/<nome-da-imagem>:<tag>
-```
-
-**Exemplo**:
-
-```bash
-docker tag app:latest mydockerrepo/app:latest
-```
-
-### 2.3. Enviar a Imagem para o Repositório
+### 2.2. Enviar a Imagem para o Repositório
 
 ```bash
 docker push <nome-do-repositorio>/<nome-da-imagem>:<tag>
