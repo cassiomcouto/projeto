@@ -87,7 +87,7 @@ kubectl config current-context
 
 ### 3.2. Editar o Arquivo `values.yaml`
 
-1. Abra `k8s/app/values.yaml` e edite os seguintes campos:
+1. Abra `k8s/app/values.yaml` e edite os seguintes campos, informando o repositório da imagem, nome da imagem e tag:
 
    ```yaml
    image:
@@ -103,10 +103,16 @@ kubectl config current-context
      tag: latest
    ```
 
-2. Salve o arquivo e execute o deploy:
+2. Salve o arquivo e execute o deploy da aplicação no Cluster EKS:
 
    ```bash
    make helm-deploy
+   ```
+
+   ou de acordo com as informaçãoes do ./k8s/apps/helm-release.yaml:
+
+   ```bash
+   helm upgrade --install app ./k8s/basechart --values ./k8s/apps/values.yaml -n default
    ```
 
 ### 3.3. Verificar o Status do Deploy
