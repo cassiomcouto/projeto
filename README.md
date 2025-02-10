@@ -1,9 +1,24 @@
 
-# Documentação para Testes e Deploy da Aplicação
+# 📖 Documentação para Testes e Deploy da Aplicação
 
-Esta documentação descreve o processo passo a passo para **construir a imagem Docker**, **enviar para um repositório Docker**, **realizar o deploy usando Helm**, e **testar a aplicação diretamente no Kubernetes**. 
+Esta documentação descreve o processo passo a passo para **construir a imagem Docker**, **enviar para um repositório Docker**, **realizar o deploy usando Helm** e **testar a aplicação diretamente no Kubernetes**.
 
-## 1. Construção da Imagem Docker
+---
+
+## **📌 Pré-requisitos**
+
+### **🛠️ Ferramentas Necessárias**
+
+| Ferramenta    | Versão Recomendada |
+|---------------|--------------------|
+| Helm          | 3.17.0             |
+| Docker        | 24.0.2             |
+| Kubectl       | (versão do Cluster) |
+| YQ            | 4.45.1             |
+
+---
+
+## 🚀 1. Construção da Imagem Docker
 
 ### 1.1. Construir a Imagem Docker Localmente
 
@@ -11,34 +26,34 @@ Esta documentação descreve o processo passo a passo para **construir a imagem 
 2. Execute o comando abaixo para construir a imagem Docker:
 
    ```bash
-   docker build -t <nome-do-repositorio>/<nome-da-imagem>:<tag> .
+   docker build -t <nome-da-imagem>:<tag> .
    ```
 
    **Exemplo**:
 
    ```bash
-   docker build -t mydockerrepo/my-app:latest .
+   docker build -t app:latest .
    ```
 
-   Isso criará uma imagem Docker chamada `my-app` com a tag `latest`. Você pode substituir `mydockerrepo` pelo nome do seu repositório Docker.
+   Isso criará uma imagem Docker chamada `app` com a tag `latest`.
 
 ### 1.2. Verificar a Imagem Criada
 
-Depois que a imagem for construída, você pode verificar se ela foi criada com sucesso executando:
+Após a construção da imagem, verifique se ela foi criada com sucesso:
 
 ```bash
 docker images
 ```
 
-Isso listará todas as imagens Docker locais, incluindo a que você acabou de criar.
+Isso listará todas as imagens Docker locais.
 
-## 2. Enviar a Imagem para o Repositório Docker
+---
 
-Agora que a imagem está construída, é hora de enviá-la para o repositório Docker.
+## 📤 2. Enviar a Imagem para o Repositório Docker
+
+Agora que a imagem está construída, é necessário enviá-la para um repositório Docker.
 
 ### 2.1. Fazer Login no Docker Hub (ou repositório privado)
-
-Se você ainda não fez login no seu repositório Docker, faça o login com o comando:
 
 ```bash
 docker login
@@ -46,9 +61,21 @@ docker login
 
 Esse comando solicitará seu nome de usuário e senha.
 
-### 2.2. Enviar a Imagem para o Repositório
+### 2.2. Criar a Tag da Imagem
 
-Para enviar a imagem para o repositório, execute:
+Antes de enviar a imagem, crie a tag associada ao repositório:
+
+```bash
+docker tag <nome-da-imagem>:<tag> <nome-do-repositorio>/<nome-da-imagem>:<tag>
+```
+
+**Exemplo**:
+
+```bash
+docker tag app:latest mydockerrepo/app:latest
+```
+
+### 2.3. Enviar a Imagem para o Repositório
 
 ```bash
 docker push <nome-do-repositorio>/<nome-da-imagem>:<tag>
@@ -57,184 +84,187 @@ docker push <nome-do-repositorio>/<nome-da-imagem>:<tag>
 **Exemplo**:
 
 ```bash
-docker push mydockerrepo/my-app:latest
+docker push mydockerrepo/app:latest
 ```
 
-Isso enviará a imagem para o repositório Docker.
+---
 
-## 3. Realizar o Deploy no Kubernetes Usando Helm
-
-Agora, vamos realizar o deploy da aplicação no Kubernetes utilizando o **Helm**.
+## ☸️ 3. Realizar o Deploy no Kubernetes Usando Helm
 
 ### 3.1. Configurar o Kubernetes
 
-Certifique-se de que seu `kubectl` está configurado corretamente para o cluster Kubernetes onde você deseja realizar o deploy.
-
-Para verificar se o `kubectl` está apontando para o cluster correto, use:
+Verifique se o `kubectl` está configurado corretamente:
 
 ```bash
 kubectl config current-context
 ```
 
-### 3.2. Instalar a Aplicação no Kubernetes
+### 3.2. Editar o Arquivo `values.yaml`
 
-1. Navegue até o diretório onde está o **chart do Helm** da aplicação (`k8s/app`).
-2. **Editar o arquivo `values.yaml`** para configurar o repositório e a tag da imagem Docker:
+1. Abra `k8s/app/values.yaml` e edite os seguintes campos:
 
-   - Abra o arquivo `k8s/app/values.yaml` no editor de sua preferência.
-   - Localize a seção da imagem, que deve estar parecida com isso:
+   ```yaml
+   image:
+     repository: <nome-do-repositorio>/<nome-da-imagem>
+     tag: <tag-da-imagem>
+   ```
 
-     ```yaml
-     image:
-       repository: <nome-do-repositorio>/<nome-da-imagem>
-       tag: <tag-da-imagem>
-     ```
+   **Exemplo**:
 
-   - **Edite os campos `repository` e `tag`** com os valores da sua imagem Docker:
+   ```yaml
+   image:
+     repository: mydockerrepo/app
+     tag: latest
+   ```
 
-     ```yaml
-     image:
-       repository: mydockerrepo/my-app
-       tag: latest
-     ```
-
-3. Após editar o arquivo, execute o seguinte comando para realizar o deploy com Helm:
+2. Salve o arquivo e execute o deploy:
 
    ```bash
    make helm-deploy
    ```
-   
-   Isso realizará o deploy da aplicação no Kubernetes, usando a imagem Docker que você acabou de enviar para o repositório.
 
 ### 3.3. Verificar o Status do Deploy
 
-Após o deploy, você pode verificar se os pods estão em execução com o comando:
+```bash
+kubectl get pods -n <namespace>
+```
+
+**Exemplo**:
 
 ```bash
 kubectl get pods -n default
 ```
 
-Isso listará todos os pods no namespace `default` e mostrará o status da aplicação, caso tenha implementado em outro namespace é preciso alterar o `default`pelo namespace utilizado no helm-release.yaml.
+Caso tenha implementado em outro namespace, altere `default` para o namespace correto.
 
+---
 
+## 🔍 4. Testes de Endpoint no Kubernetes
 
-## 4. Testes de Endpoint no Kubernetes
+### 4.1. Redirecionar a Porta do Serviço
 
-Agora que a aplicação está implantada no Kubernetes, você pode testar os endpoints diretamente no cluster usando o `kubectl port-forward` para mapear a porta do serviço para o seu localhost.
+```bash
+kubectl port-forward svc/<nome-do-release> 8000:8000 -n <namespace>
+```
 
-### 4.1. Rodar o `kubectl port-forward`
-
-Para testar os endpoints da aplicação diretamente, execute o seguinte comando para redirecionar a porta do serviço para sua máquina local:
+**Exemplo**:
 
 ```bash
 kubectl port-forward svc/app 8000:8000 -n default
 ```
 
-Isso irá mapear a porta `8000` do serviço `app` no Kubernetes para a porta `8000` na sua máquina local. Após isso, você poderá acessar a aplicação localmente, usando `http://localhost:8000`.
+Agora você pode acessar a aplicação em `http://localhost:8000`.
 
 ### 4.2. Testar os Endpoints da Aplicação com `curl`
 
-Agora que a aplicação está acessível localmente, você pode usar o `curl` para testar os diferentes endpoints.
+#### ✅ Testar o Healthcheck
 
-1. **Testar o Healthcheck da Aplicação**:
-   Verifique se o endpoint de saúde está funcionando corretamente.
+```bash
+curl http://localhost:8000/health
+```
 
-   ```bash
-   curl http://localhost:8000/health
-   ```
+**Saída esperada**:
 
-   **Saída Esperada**:
-   ```json
-   {"status": "healthy"}
-   ```
+```json
+{"status": "healthy"}
+```
 
-2. **Testar os Endpoints de Cálculo**:
-   Teste os endpoints que executam as operações de soma, subtração, multiplicação e divisão.
+#### ➕ Testar Operações de Cálculo
 
-   - **Soma**:
-     ```bash
-     curl -X GET "http://localhost:8000/api/sum?term_one=5&term_two=3"
-     ```
-     **Saída Esperada**:
-     ```json
-     {"result": 8}
-     ```
+- **Soma**:
 
-   - **Subtração**:
-     ```bash
-     curl -X GET "http://localhost:8000/api/sub?term_one=5&term_two=3"
-     ```
-     **Saída Esperada**:
-     ```json
-     {"result": 2}
-     ```
+  ```bash
+  curl -X GET "http://localhost:8000/api/sum?term_one=5&term_two=3"
+  ```
 
-   - **Multiplicação**:
-     ```bash
-     curl -X GET "http://localhost:8000/api/mul?term_one=5&term_two=3"
-     ```
-     **Saída Esperada**:
-     ```json
-     {"result": 15}
-     ```
+  **Saída esperada**:
 
-   - **Divisão**:
-     ```bash
-     curl -X GET "http://localhost:8000/api/div?term_one=5&term_two=3"
-     ```
-     **Saída Esperada**:
-     ```json
-     {"result": 2}
-     ```
+  ```json
+  {"result": 8}
+  ```
 
-   - **Divisão por Zero (Erro)**:
-     Verifique se a aplicação trata corretamente o erro de divisão por zero.
+- **Subtração**:
 
-     ```bash
-     curl -X GET "http://localhost:8000/api/div?term_one=10&term_two=0"
-     ```
+  ```bash
+  curl -X GET "http://localhost:8000/api/sub?term_one=5&term_two=3"
+  ```
 
-     **Saída Esperada**:
-     ```json
-     {"error": "Cannot divide by zero"}
-     ```
+  **Saída esperada**:
 
+  ```json
+  {"result": 2}
+  ```
 
-## 5. Remover a Aplicação do Kubernetes
+- **Multiplicação**:
 
-Caso você precise remover a aplicação do Kubernetes, basta executar o comando `helm uninstall` para remover o release correspondente.
+  ```bash
+  curl -X GET "http://localhost:8000/api/mul?term_one=5&term_two=3"
+  ```
 
-### 5.1. Comando para Remover a Aplicação
+  **Saída esperada**:
 
-1. Para remover o deploy da aplicação, execute o seguinte comando:
+  ```json
+  {"result": 15}
+  ```
 
-   ```bash
-   helm uninstall <nome-do-release> -n default
-   ```
+- **Divisão**:
 
-   **Exemplo**:
+  ```bash
+  curl -X GET "http://localhost:8000/api/div?term_one=5&term_two=3"
+  ```
 
-   ```bash
-   helm uninstall app -n default
-   ```
+  **Saída esperada**:
 
-   Isso irá remover a aplicação do Kubernetes, incluindo todos os recursos associados (como pods, serviços, etc.) relacionados a esse release.
+  ```json
+  {"result": 2}
+  ```
 
-2. Para verificar se a aplicação foi removida corretamente, execute o comando:
+- **Divisão por Zero (Erro esperado)**:
 
-   ```bash
-   kubectl get pods -n default
-   ```
+  ```bash
+  curl -X GET "http://localhost:8000/api/div?term_one=10&term_two=0"
+  ```
 
-   Isso deve listar os pods no namespace `default` e, ao remover a aplicação, não deve aparecer o pod da aplicação no retorno do comando.
+  **Saída esperada**:
+
+  ```json
+  {"error": "Cannot divide by zero"}
+  ```
 
 ---
 
-## 5. Considerações Finais
+## ❌ 5. Remover a Aplicação do Kubernetes
 
-- **Port-Forward**: Use o `kubectl port-forward` para acessar a aplicação de dentro do Kubernetes localmente. Isso permite que você teste a aplicação sem a necessidade de expor o serviço diretamente.
-- **Testes**: Após o deploy, faça os testes com `curl` para garantir que todos os endpoints estejam funcionando corretamente.
-- **Helm**: Utilize o Helm para garantir que o deploy seja realizado de maneira consistente e repetível no Kubernetes. Isso facilita o gerenciamento de versões da aplicação e facilita os upgrades.
-- **Manutenção e Monitoramento**: Verifique regularmente o status dos pods e serviços no Kubernetes, usando `kubectl get pods` e `kubectl get services`. Caso a aplicação precise ser atualizada ou escalada, o Helm facilita esse processo.
+Caso precise remover a aplicação do Kubernetes, execute:
 
-Para mais detalhes sobre cada parte do processo, consulte a documentação disponível na pasta `/doc`.
+```bash
+helm uninstall <nome-do-release> -n <namespace>
+```
+
+**Exemplo**:
+
+```bash
+helm uninstall app -n default
+```
+
+Para verificar se foi removido corretamente:
+
+```bash
+kubectl get pods -n default
+```
+
+---
+
+## 📌 6. Considerações Finais
+
+✔ **Port-Forward**: Use `kubectl port-forward` para acessar a aplicação dentro do Kubernetes localmente.
+
+✔ **Testes**: Execute `curl` para validar os endpoints após o deploy.
+
+✔ **Helm**: Utilize o Helm para facilitar o gerenciamento e a repetição do processo de deploy.
+
+✔ **Monitoramento**: Use `kubectl get pods` e `kubectl get services` para verificar o status da aplicação.
+
+---
+
+📂 **Para mais detalhes**, consulte a documentação disponível na pasta `/doc`.
