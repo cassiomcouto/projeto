@@ -1,2 +1,2 @@
 def healthcheck():
-    return {"status": "ok"}
+    return {"status": "healthy"}

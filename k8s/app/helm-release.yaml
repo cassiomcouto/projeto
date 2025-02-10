@@ -1,0 +1,13 @@
+release:
+  name: app
+  namespace: default
+  context: development
+  timeout: 300s
+  historyMax: 10
+chart:
+  name: basechart  # Diretório do chart local
+  repo: ""
+  version: 0.1.0  # Pode ser usado para versionamento interno
+values:
+  file:
+    - values.yaml  # Aponta para o values.yaml no mesmo diretório

@@ -1,0 +1,8 @@
+replicaCount: 1
+
+image:
+  repository: "918282016206.dkr.ecr.us-east-1.amazonaws.com/app"
+  tag: latest
+
+service:
+  port: 8000
