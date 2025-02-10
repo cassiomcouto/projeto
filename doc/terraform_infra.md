@@ -23,3 +23,31 @@ terraform/
 - **`terraform.auto.tfvars`**: Arquivo de variáveis automaticamente carregado pelo Terraform, utilizado para definir valores de variáveis, como credenciais, regiões e configurações do ambiente.
 - **`variables.tf`**: Declaração de variáveis usadas em toda a configuração do Terraform. Essas variáveis são definidas e podem ser atribuídas a valores específicos em outros arquivos.
 - **`vpc.tf`**: Arquivo responsável pela configuração da VPC (Virtual Private Cloud) dentro da AWS, definindo CIDR, subnets públicas e privadas, e configurações de segurança e conectividade.
+
+## Comandos do Makefile
+
+### 🌍 **Infraestrutura com Terraform**
+
+1. **Inicializar o Terraform**:
+   - Este comando inicializa o diretório do Terraform:
+   ```bash
+   make terraform-init
+   ```
+
+2. **Verificar Mudanças do Terraform**:
+   - Este comando exibe o plano de execução do Terraform:
+   ```bash
+   make terraform-plan
+   ```
+
+3. **Aplicar a Infraestrutura com Terraform**:
+    - Este comando aplica as mudanças de infraestrutura com o Terraform:
+    ```bash
+    make terraform-apply
+    ```
+
+4. **Destruir a Infraestrutura com Terraform**:
+    - Este comando destrói a infraestrutura gerenciada pelo Terraform:
+    ```bash
+    make terraform-destroy
+    ```
