@@ -1,14 +1,14 @@
-apiVersion: v1
-kind: Service
+apiVersion: v1  # Define que este recurso é um Service no Kubernetes
+kind: Service  # Tipo de recurso que expõe a aplicação dentro ou fora do cluster
 metadata:
-  name: {{ .Release.Name }}
+  name: {{ .Release.Name }}  # Nome do Service baseado no nome do release do Helm
   labels:
-    app: {{ .Release.Name }}
+    app: {{ .Release.Name }}  # Rótulo para identificar o Service
 spec:
   selector:
-    app: {{ .Release.Name }}
+    app: {{ .Release.Name }}  # O Service irá direcionar tráfego para pods com esse label
   ports:
-    - protocol: TCP
-      port: {{ .Values.service.port }}
-      targetPort: 8000
-  type: {{ .Values.service.type }}
+    - protocol: TCP  # Define que o serviço usa o protocolo TCP
+      port: {{ .Values.service.port }}  # Porta exposta pelo Service
+      targetPort: 8000  # Porta dentro do container para onde o tráfego será redirecionado
+  type: {{ .Values.service.type }}  # Define o tipo do Service (ClusterIP, NodePort ou LoadBalancer)
