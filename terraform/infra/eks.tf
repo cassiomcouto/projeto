@@ -7,8 +7,8 @@ module "eks" {
 
   # Addons para o cluster EKS, que são serviços e ferramentas adicionais a serem instalados
   cluster_addons = {
-    kube-proxy     = true # Habilita o Kube Proxy para roteamento de rede dentro do cluster
-    metrics-server = true # Habilita o Metrics Server para coleta de métricas de recursos
+    kube-proxy             = true # Habilita o Kube Proxy para roteamento de rede dentro do cluster
+    metrics-server         = true # Habilita o Metrics Server para coleta de métricas de recursos
   }
 
   # Configurações de acesso público e permissões administrativas
@@ -22,6 +22,7 @@ module "eks" {
   # Configuração padrão para grupos de nós gerenciados
   eks_managed_node_group_defaults = {
     instance_types = ["t3.medium"] # Tipo de instância padrão para os nós gerenciados
+    capacity_type  = "SPOT"        # Capacitadade da instância: ON_DEMAND ou SPOT
   }
 
   # Definição dos grupos de nós gerenciados para o cluster, passando variáveis configuráveis

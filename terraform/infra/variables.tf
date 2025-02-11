@@ -53,7 +53,6 @@ variable "cluster_version" {
 variable "eks_managed_node_groups" {
   description = "Configuração dos Managed Node Groups do EKS"
   type = map(object({
-    ami_type       = string
     instance_types = list(string)
     min_size       = number
     max_size       = number
