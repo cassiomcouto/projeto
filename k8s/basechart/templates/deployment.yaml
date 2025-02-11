@@ -1,38 +1,42 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: apps/v1  # Define que este recurso é um Deployment na API do Kubernetes
+kind: Deployment  # Tipo de recurso que gerencia os Pods e garante disponibilidade
 metadata:
-  name: {{ .Release.Name }}
+  name: {{ .Release.Name }}  # Nome do Deployment baseado no nome do release do Helm
   labels:
-    app: {{ .Release.Name }}
+    app: {{ .Release.Name }}  # Label para identificar os pods do deployment
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ .Values.replicaCount }}  # Define o número de réplicas do pod
   selector:
     matchLabels:
-      app: {{ .Release.Name }}
+      app: {{ .Release.Name }}  # Seleciona os pods que correspondem a essa label
   template:
     metadata:
       labels:
-        app: {{ .Release.Name }}
+        app: {{ .Release.Name }}  # Label para os pods criados por este Deployment
     spec:
       containers:
-        - name: {{ .Chart.Name }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+        - name: {{ .Chart.Name }}  # Nome do container baseado no nome do Chart
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"  # Imagem do container (repositório + tag)
+          imagePullPolicy: {{ .Values.image.pullPolicy }}  # Política de pull da imagem (Always, IfNotPresent, Never)
           ports:
-            - containerPort: 8000
+            - containerPort: 8000  # Expõe a porta 8000 do container
+
+          # Liveness Probe (verifica se a aplicação ainda está viva)
           {{- if .Values.livenessProbe.enabled }}
           livenessProbe:
             httpGet:
-              path: {{ .Values.livenessProbe.path }}
-              port: 8000
-            initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
-            periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+              path: {{ .Values.livenessProbe.path }}  # Caminho do endpoint de liveness
+              port: 8000  # Porta onde a aplicação expõe a liveness probe
+            initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}  # Tempo inicial antes da primeira verificação
+            periodSeconds: {{ .Values.livenessProbe.periodSeconds }}  # Intervalo entre verificações
           {{- end }}
+
+          # Readiness Probe (verifica se a aplicação está pronta para receber tráfego)
           {{- if .Values.readinessProbe.enabled }}
           readinessProbe:
             httpGet:
-              path: {{ .Values.readinessProbe.path }}
-              port: 8000
-            initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
-            periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+              path: {{ .Values.readinessProbe.path }}  # Caminho do endpoint de readiness
+              port: 8000  # Porta onde a aplicação expõe a readiness probe
+            initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}  # Tempo inicial antes da primeira verificação
+            periodSeconds: {{ .Values.readinessProbe.periodSeconds }}  # Intervalo entre verificações
           {{- end }}
