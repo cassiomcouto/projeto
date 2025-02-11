@@ -26,13 +26,13 @@ Esta documentação descreve o processo passo a passo para **construir a imagem 
 2. Execute o comando abaixo para construir a imagem Docker:
 
    ```bash
-   docker build -t <nome-do-repositorio>/<nome-da-imagem>:<tag> .
+   docker build -t <nome-da-imagem>:<tag> .
    ```
 
    **Exemplo**:
 
    ```bash
-   docker build -t mydockerrepo/app:latest .
+   docker build -t app:latest .
    ```
 
    Isso criará uma imagem Docker chamada `app` com a tag `latest`.
@@ -61,7 +61,19 @@ docker login
 
 Esse comando solicitará seu nome de usuário e senha.
 
-### 2.2. Enviar a Imagem para o Repositório
+### 2.2. Criar a tag latest:
+
+```bash
+docker tag <nome-da-imagem>:<tag> <nome-do-repositorio>/<nome-da-imagem>:<tag>
+```
+
+**Exemplo**:
+
+```bash
+docker tag app:latest mydockerrepo/app:latest
+```
+
+### 2.3. Enviar a Imagem para o Repositório
 
 ```bash
 docker push <nome-do-repositorio>/<nome-da-imagem>:<tag>
@@ -104,12 +116,6 @@ kubectl config current-context
    ```
 
 2. Salve o arquivo e execute o deploy da aplicação no Cluster EKS:
-
-   ```bash
-   make helm-deploy
-   ```
-
-   ou de acordo com as informaçãoes do ./k8s/apps/helm-release.yaml:
 
    ```bash
    helm upgrade --install app ./k8s/basechart --values ./k8s/apps/values.yaml -n default
@@ -223,9 +229,44 @@ curl http://localhost:8000/health
   {"error": "Cannot divide by zero"}
   ```
 
+# ✅ 5. Executar Testes com Cobertura de Código
+
+Os testes devem ser executados dentro de um container Docker para garantir um ambiente limpo e consistente.
+
+## 5.1. Construir a Imagem de Teste
+
+```bash
+docker build -t app-test .
+```
+
+## 5.2. Executar os Testes com Cobertura
+
+```bash
+docker run --rm -e PYTHONPATH=/app app-test pytest --cov=app --cov-report=term-missing tests/
+```
+
+📌 **Explicação dos parâmetros:**
+- `--cov=app` → Gera o relatório de cobertura de código da aplicação.
+- `--cov-report=term-missing` → Exibe as linhas de código que não foram cobertas pelos testes.
+
+### **Saída esperada:**
+```bash
+----------- coverage: platform linux, python 3.X -----------
+Name                Stmts   Miss  Cover   Missing
+-------------------------------------------------
+app/__init__.py         0      0   100%
+app/health.py           2      0   100%
+app/main.py            21      0   100%
+app/operations.py      10      0   100%
+-------------------------------------------------
+TOTAL                  33      0   100%
+```
+
+Se houver alguma linha sem cobertura, ajuste os testes para aumentar a qualidade do código.
+
 ---
 
-## ❌ 5. Remover a Aplicação do Kubernetes
+## ❌ 6. Remover a Aplicação do Kubernetes
 
 Caso precise remover a aplicação do Kubernetes, execute:
 
@@ -247,7 +288,7 @@ kubectl get pods -n default
 
 ---
 
-## 📌 6. Considerações Finais
+## 📌 7. Considerações Finais
 
 ✔ **Port-Forward**: Use `kubectl port-forward` para acessar a aplicação dentro do Kubernetes localmente.
 
