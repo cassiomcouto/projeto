@@ -1,8 +1,12 @@
 module "ecr_app" {
-  source  = "terraform-aws-modules/ecr/aws" # Fonte do módulo ECR
-  version = "~> 2.3"                        # Versão do módulo
+  source  = "terraform-aws-modules/ecr/aws" # Utiliza o módulo oficial do Terraform para criar um repositório no ECR
+  version = "~> 2.3"                        # Define a versão do módulo para garantir compatibilidade
 
-  repository_name = var.repository_name # Nome do repositório no ECR
+  repository_name = var.repository_name     # Define o nome do repositório com base em uma variável
+
+  repository_read_write_access_arns = [     # Configura permissões de leitura e escrita para o repositório
+    module.iam_assumable_role_ecr.iam_role_arn # Especifica a IAM Role que terá acesso ao ECR
+  ]
 
   # Configuração de mutabilidade das tags de imagem: permitido alterar as tags após a criação
   repository_image_tag_mutability = "MUTABLE"
