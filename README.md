@@ -14,7 +14,6 @@ Esta documentação descreve o processo passo a passo para **construir a imagem 
 | Helm          | 3.17.0             |
 | Docker        | 24.0.2             |
 | Kubectl       | (versão do Cluster) |
-| YQ            | 4.45.1             |
 
 ---
 
