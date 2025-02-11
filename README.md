@@ -118,7 +118,7 @@ kubectl config current-context
 2. Salve o arquivo e execute o deploy da aplicação no Cluster EKS:
 
    ```bash
-   helm upgrade --install app ./k8s/basechart --values ./k8s/apps/values.yaml -n default
+   helm upgrade --install app ./k8s/basechart --values ./k8s/app/values.yaml -n default
    ```
 
 ### 3.3. Verificar o Status do Deploy
@@ -261,8 +261,6 @@ app/operations.py      10      0   100%
 -------------------------------------------------
 TOTAL                  33      0   100%
 ```
-
-Se houver alguma linha sem cobertura, ajuste os testes para aumentar a qualidade do código.
 
 ---
 
