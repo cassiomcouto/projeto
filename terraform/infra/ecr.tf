@@ -4,10 +4,6 @@ module "ecr_app" {
 
   repository_name = var.repository_name     # Define o nome do repositório com base em uma variável
 
-  repository_read_write_access_arns = [     # Configura permissões de leitura e escrita para o repositório
-    module.iam_assumable_role_ecr.iam_role_arn # Especifica a IAM Role que terá acesso ao ECR
-  ]
-
   # Configuração de mutabilidade das tags de imagem: permitido alterar as tags após a criação
   repository_image_tag_mutability = "MUTABLE"
 
